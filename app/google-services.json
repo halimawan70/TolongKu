@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "343560947145",
+    "firebase_url": "https://tolongku-2b885.firebaseio.com",
+    "project_id": "tolongku-2b885",
+    "storage_bucket": "tolongku-2b885.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:343560947145:android:189e2e70a496a831",
+        "android_client_info": {
+          "package_name": "edu.bluejack17_2.tolongku"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "343560947145-piu0mahvq1mu6nqcf2g9k1902lkdhacr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.bluejack17_2.tolongku",
+            "certificate_hash": "72f17076ac99d40885d2ba686eb50c9839bd1ff5"
+          }
+        },
+        {
+          "client_id": "343560947145-796puah0ekbj2mmjskdghho55t06o3r4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt4H5OHqLlm5Ji6wQjOnTPVUbevBn9cD0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "343560947145-796puah0ekbj2mmjskdghho55t06o3r4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

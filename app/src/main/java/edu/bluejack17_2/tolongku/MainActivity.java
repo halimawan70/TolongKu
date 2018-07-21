@@ -43,6 +43,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Build a GoogleSignInClient with the options specified by gso.
         Object mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        //goto register
+
+
     }
 
     @Override

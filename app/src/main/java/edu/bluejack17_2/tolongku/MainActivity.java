@@ -25,7 +25,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class MainActivity extends AppCompatActivity implements  View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
+
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
@@ -33,6 +34,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private GoogleSignInOptions gso;
     private static final int RC_SIGN_IN = 123;
    
+
+    @Override
+    public void onClick(View view) {
+
+        switch(view.getId())
+        {
+            case R.id.lblSignupOffer:
+                //goto register
+                startActivity(new Intent(getApplicationContext(),RegisterActivity.class));
+                break;
+        }
+
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +69,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        //goto register
+
+        //register button
+        findViewById(R.id.lblSignupOffer).setOnClickListener(this);
+
+
+
 
 
     }

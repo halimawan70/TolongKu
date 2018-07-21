@@ -1,11 +1,13 @@
 package edu.bluejack17_2.tolongku;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     private GoogleApiClient mGoogleApiClient;
     private GoogleSignInOptions gso;
     private static final int RC_SIGN_IN = 123;
+    private Button btnSignIn;
    
 
     @Override
@@ -44,6 +48,10 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                 //goto register
                 startActivity(new Intent(getApplicationContext(),RegisterActivity.class));
                 break;
+            case R.id.btnSignIn:
+                loginBtnClick();
+                break;
+
         }
 
 
@@ -73,8 +81,8 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         //register button
         findViewById(R.id.lblSignupOffer).setOnClickListener(this);
 
-
-
+        btnSignIn = findViewById(R.id.btnSignIn);
+        btnSignIn.setOnClickListener(this);
 
 
     }
@@ -101,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         // sesuatu
     }
 
-    public void loginBtnClick(View view){
+    public void loginBtnClick(){
         TextView tbEmail = findViewById(R.id.tbUsername);
         TextView tbPassword = findViewById(R.id.tbPassword);
 
@@ -120,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 //                            updateUI(user);
                             Toast.makeText(MainActivity.this,
                                     "Authentication succeeded.", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(getApplicationContext(),MenuActivity.class));
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("Login", "signInWithEmail:failure", task.getException());

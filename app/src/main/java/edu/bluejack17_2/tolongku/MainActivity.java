@@ -22,13 +22,28 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements  View.OnClickListener {
 
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
     private static final int RC_SIGN_IN = 123;
-   
+
+
+    @Override
+    public void onClick(View view) {
+
+        switch(view.getId())
+        {
+            case R.id.lblSignupOffer:
+                //goto register
+                startActivity(new Intent(getApplicationContext(),RegisterActivity.class));
+                break;
+        }
+
+
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +59,12 @@ public class MainActivity extends AppCompatActivity {
         // Build a GoogleSignInClient with the options specified by gso.
         Object mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        //goto register
+
+        //register button
+        findViewById(R.id.lblSignupOffer).setOnClickListener(this);
+
+
+
 
 
     }
@@ -150,5 +170,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
 }

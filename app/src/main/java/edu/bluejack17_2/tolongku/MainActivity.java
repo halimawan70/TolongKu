@@ -11,6 +11,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -28,6 +33,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+
+
 public class MainActivity extends AppCompatActivity implements  View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
 
@@ -37,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     private GoogleSignInOptions gso;
     private static final int RC_SIGN_IN = 123;
     private Button btnSignIn;
+    CallbackManager callbackManager;
+    LoginButton loginButton;
    
 
     @Override
@@ -65,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_main);
         mAuth = FirebaseAuth.getInstance();
 
@@ -84,6 +96,30 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
         // Build a GoogleSignInClient with the options specified by gso.
 
+        //facebook sign in
+        callbackManager = CallbackManager.Factory.create();
+        AppEventsLogger.activateApp(this);
+        loginButton = findViewById(R.id.btnFacebookSignin);
+
+        loginButton.registerCallback(callbackManager,new FacebookCallback<LoginResult>(){
+
+            public void onSuccess(LoginResult loginResult)
+            {
+                startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+            }
+
+            public void onCancel()
+            {
+                Toast.makeText(MainActivity.this, "Facebook Login Canceled", Toast.LENGTH_SHORT).show();
+            }
+
+            public void onError(FacebookException error)
+            {
+                Toast.makeText(MainActivity.this, "Facebook login failed", Toast.LENGTH_SHORT).show();
+            }
+            
+        });
+
 
 
         //onclick listener registration
@@ -99,23 +135,23 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     @Override
     public void onStart(){
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if(currentUser != null){
-            Toast.makeText(this, "User is logged in!!", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(this, "User is not logged in!", Toast.LENGTH_SHORT).show();
-        }
+//        // Check if user is signed in (non-null) and update UI accordingly.
+//
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//
+//        if(currentUser != null){
+//            Toast.makeText(this, "User is logged in!!", Toast.LENGTH_SHORT).show();
+//        }else{
+//            Toast.makeText(this, "User is not logged in!", Toast.LENGTH_SHORT).show();
+//        }
 
 
         // check existing user
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        if(account != null)
-        {
-            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
-        }
+//        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+//        if(account != null)
+//        {
+//            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+//        }
     }
 
     public void googleSignIn()
@@ -162,6 +198,8 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
+
+        callbackManager.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(..);
         if(requestCode == RC_SIGN_IN){

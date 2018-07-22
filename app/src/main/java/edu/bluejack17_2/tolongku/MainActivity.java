@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
             case R.id.btnSignIn:
                 loginBtnClick();
                 break;
+            case R.id.btnGoogleSignin:
+                googleSignIn();
+                break;
+
 
         }
 
@@ -66,20 +70,25 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail()
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
                 .build();
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
-        // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .enableAutoManage(this, this)
+//                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+//                .build();
 
-        //register button
+        // Build a GoogleSignInClient with the options specified by gso.
+
+
+
+        //onclick listener registration
         findViewById(R.id.lblSignupOffer).setOnClickListener(this);
+        findViewById(R.id.btnGoogleSignin).setOnClickListener(this);
 
         btnSignIn = findViewById(R.id.btnSignIn);
         btnSignIn.setOnClickListener(this);
@@ -100,14 +109,21 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
             Toast.makeText(this, "User is not logged in!", Toast.LENGTH_SHORT).show();
         }
 
-        // Configure Google Sign In
-        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
 
-        // sesuatu
+        // check existing user
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        if(account != null)
+        {
+            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+        }
     }
+
+    public void googleSignIn()
+    {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
 
     public void loginBtnClick(){
         TextView tbEmail = findViewById(R.id.tbUsername);
@@ -141,10 +157,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                 });
     }
 
-    public void googleLoginBtnClick(View view){
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -153,16 +166,25 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(..);
         if(requestCode == RC_SIGN_IN){
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try{
-                // Google Sign In was successful, authenticate with Firebase
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account);
-            }catch (ApiException e){
-                // Google Sign In failed, update UI appropriately
-                Log.w("Google Sign In", "Google sign in failed", e);
-            }
+            handleSignInResult(task);
+
         }
     }
+
+    public void handleSignInResult(Task<GoogleSignInAccount> completedTask)
+    {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w("LOGINGERROR", "signInResult:failed code=" + e.getStatusCode());
+        }
+    }
+
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account){
         Log.d("Google Sign In", "firebaseAuthWithGoogle: " + account.getId());

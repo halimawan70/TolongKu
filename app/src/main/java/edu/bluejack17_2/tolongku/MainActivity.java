@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
             public void onSuccess(LoginResult loginResult)
             {
-                startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+                startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
             }
 
             public void onCancel()
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 //                            updateUI(user);
                             Toast.makeText(MainActivity.this,
                                     "Authentication succeeded.", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(),MenuActivity.class));
+                            startActivity(new Intent(getApplicationContext(),NavigationActivity.class));
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("Login", "signInWithEmail:failure", task.getException());
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
-            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+            startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.

@@ -1,5 +1,6 @@
 package edu.bluejack17_2.tolongku;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,13 +15,49 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 public class NavigationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+
+
+
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -53,6 +90,7 @@ public class NavigationActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -84,6 +122,65 @@ public class NavigationActivity extends AppCompatActivity
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
+
+
+    public void doLogout()
+    {
+        if(FirebaseAuth.getInstance().getCurrentUser() != null)
+        {
+            FirebaseAuth.getInstance().signOut();
+            Toast.makeText(getApplicationContext()," Firebase Logged Out",Toast.LENGTH_SHORT).show();
+            MainActivity.firebaseAuth = false;
+            Intent i=new Intent(getApplicationContext(),MainActivity.class);
+            startActivity(i);
+        }
+
+
+        if( MainActivity.mGoogleApiClient != null && MainActivity.mGoogleApiClient.isConnected())
+        {
+            Auth.GoogleSignInApi.signOut(MainActivity.mGoogleApiClient).setResultCallback(
+                    new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status status) {
+                            MainActivity.googleAuth = false;
+                            Toast.makeText(getApplicationContext()," Google Logged Out",Toast.LENGTH_SHORT).show();
+                            Intent i=new Intent(getApplicationContext(),MainActivity.class);
+                            startActivity(i);
+                        }
+                    });
+        }
+
+        if(AccessToken.getCurrentAccessToken() != null)
+        {
+            MainActivity.facebookAuth  = false;
+            Toast.makeText(getApplicationContext()," Facebook Logged Out",Toast.LENGTH_SHORT).show();
+
+            LoginManager.getInstance().logOut();
+            Intent i=new Intent(getApplicationContext(),MainActivity.class);
+            startActivity(i);
+        }
+
+
+
+
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+    }
+
+    public void userSetting()
+    {
+        Intent i = new Intent(getApplicationContext(),settingActivity.class);
+        startActivity(i);
+    }
+
+    public void searchActivity()
+    {
+        Intent i = new Intent(getApplicationContext(), searchFriendActivity.class);
+        startActivity(i);
+    }
+
+
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -94,10 +191,13 @@ public class NavigationActivity extends AppCompatActivity
         } else if (id == R.id.nav_home) {
 
         } else if (id == R.id.nav_logout) {
+            doLogout();
 
         } else if (id == R.id.nav_request) {
+            searchActivity();
 
         } else if (id == R.id.nav_setting) {
+            userSetting();
 
         } else if (id == R.id.nav_view) {
 

@@ -2,6 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -32,4 +33,14 @@
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="15dp"
         android:text="Add As Friend" />
+
+    <TextView
+        android:id="@+id/lblAddFriendID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/imgAddFriend"
+        android:layout_marginEnd="139dp"
+        android:text="ID"
+        tools:visibility="invisible" />
 </RelativeLayout>

@@ -136,7 +136,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     storeUserData.child("userContactNumber").setValue(0);
                     storeUserData.child("userContactEmail").setValue("");
                     storeUserData.child("userMessage").setValue("");
-
+                    storeUserData.child("userID").setValue(currUserId);
                     if(rbnMale.isChecked())
                     {
                         storeUserData.child("userGender").setValue("Male");

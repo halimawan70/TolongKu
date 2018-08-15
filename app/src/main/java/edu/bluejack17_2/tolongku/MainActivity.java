@@ -18,6 +18,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.Profile;
 import com.facebook.login.Login;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -188,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                                                 storeUserData.child("userContactNumber").setValue(0);
                                                 storeUserData.child("userContactEmail").setValue("");
                                                 storeUserData.child("userMessage").setValue("");
+                                                storeUserData.child("userID").setValue(id);
 
 
                                             }
@@ -245,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                 return;
             }
             Toast.makeText(this, "User is logged in!!", Toast.LENGTH_SHORT).show();
+            authID = currentUser.getUid();
             startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
         }else{
             Toast.makeText(this, "User is not logged in!", Toast.LENGTH_SHORT).show();
@@ -255,12 +258,15 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
         if( MainActivity.mGoogleApiClient != null && MainActivity.mGoogleApiClient.isConnected())
         {
+            GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+            authID = acct.getId();
             Toast.makeText(this, "Google User is logged in!!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
         }
 
         if(AccessToken.getCurrentAccessToken() != null)
         {
+            authID = Profile.getCurrentProfile().getId();
             Toast.makeText(this, "Facebook User is logged in!!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
         }
@@ -375,7 +381,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                             storeUserData.child("userContactNumber").setValue(0);
                             storeUserData.child("userContactEmail").setValue("");
                             storeUserData.child("userMessage").setValue("");
-
+                            storeUserData.child("userID").setValue(id);
                         }
                     }
 

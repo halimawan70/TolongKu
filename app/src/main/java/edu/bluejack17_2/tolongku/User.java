@@ -3,14 +3,17 @@ package edu.bluejack17_2.tolongku;
 import android.util.Log;
 
 public class User {
+    private String[] userFriend;
+    private String userContactEmail,userContactNumber,userEmail,userGender,userID,userName,userPhone,userMessage;
 
-    private String userContactEmail,userContactNumber,userEmail,userGender,userName,userPhone,userMessage;
 
-    public User(String userContactEmail, String userContactNumber, String userEmail, String userGender, String userName, String userPhone, String userMessage) {
+    public User(String[] userFriend, String userContactEmail, String userContactNumber, String userEmail, String userGender, String userID, String userName, String userPhone, String userMessage) {
+        this.userFriend = userFriend;
         this.userContactEmail = userContactEmail;
         this.userContactNumber = userContactNumber;
         this.userEmail = userEmail;
         this.userGender = userGender;
+        this.userID = userID;
         this.userName = userName;
         this.userPhone = userPhone;
         this.userMessage = userMessage;
@@ -19,6 +22,22 @@ public class User {
     public User()
     {}
 
+
+    public String[] getUserFriend() {
+        return userFriend;
+    }
+
+    public void setUserFriend(String[] userFriend) {
+        this.userFriend = userFriend;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
 
     public String getUserMessage() {
         return userMessage;

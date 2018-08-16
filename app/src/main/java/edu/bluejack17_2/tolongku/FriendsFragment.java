@@ -51,11 +51,11 @@ public class FriendsFragment extends Fragment {
 
 
     public FriendsFragment() {
-        lvFriendList = getView().findViewById(R.id.lvFriendList);
-        Toast.makeText(getActivity().getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
-        dbRef = FirebaseDatabase.getInstance().getReference().child("Users").child(MainActivity.authID);
-        ids = new Vector<>();
-        populateFriendList();
+        //lvFriendList = getView().findViewById(R.id.lvFriendList);
+        //Toast.makeText(getActivity().getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
+        //dbRef = FirebaseDatabase.getInstance().getReference().child("Users").child(MainActivity.authID);
+        //ids = new Vector<>();
+        //populateFriendList();
 
         // Required empty public constructor
 

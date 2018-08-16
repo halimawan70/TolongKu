@@ -133,7 +133,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     storeUserData.child("userName").setValue(txtName.getText().toString().trim());
                     storeUserData.child("userEmail").setValue(txtEmail.getText().toString().trim());
                     storeUserData.child("userPhone").setValue(txtPhone.getText().toString().trim());
-                    storeUserData.child("userContactNumber").setValue(0);
+                    storeUserData.child("userContactNumber").setValue("");
                     storeUserData.child("userContactEmail").setValue("");
                     storeUserData.child("userMessage").setValue("");
                     storeUserData.child("userID").setValue(currUserId);

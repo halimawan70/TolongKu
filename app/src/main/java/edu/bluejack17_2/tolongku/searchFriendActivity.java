@@ -1,11 +1,13 @@
 package edu.bluejack17_2.tolongku;
 
 import android.annotation.SuppressLint;
-import android.graphics.drawable.Drawable;
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.method.Touch;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -31,6 +33,9 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
     Button btnSearch;
     Vector<User> users;
     TextView lblSearchFriendID;
+    CustomAdapter ca;
+
+    RecyclerView rvSearch;
 
     DatabaseReference dbRef;
 
@@ -43,6 +48,8 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
         btnSearch = findViewById(R.id.btnSearch);
         btnSearch.setOnClickListener(this);
         txtSearch = findViewById(R.id.txtSearch);
+        //rvSearch=findViewById(R.id.rvSearch);
+
         users = new Vector<>();
         dbRef = FirebaseDatabase.getInstance().getReference().child("Users");
         if(lvSearch == null)
@@ -50,14 +57,16 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
             Log.d("searchFriendActivity","null euy");
         }
         txtSearch = findViewById(R.id.txtSearch);
-        //CustomAdapter ca = new CustomAdapter();
-        //lvSearch.setAdapter(ca);
+        //String[] strs = {"a","B","c"};
+        //users.add(new User(strs,"test","test","test","test","test","test","test","test"));
+        ca = new CustomAdapter();
+        lvSearch.setAdapter(ca);
 
     }
 
     void doSearch()
     {
-        Log.d("searchFriendActivity","users count : "+users.size());
+
         users.clear();
         dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
@@ -66,15 +75,22 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
                 for(DataSnapshot ds : dataSnapshot.getChildren())
                 {
                     User u = ds.getValue(User.class);
-
-                    if(u.getUserName().contains(txtSearch.getText().toString()))
+                    if(u != null)
                     {
-                        users.add(u);
+                        if(u.getUserName().contains(txtSearch.getText().toString()))
+                        {
+                            Log.d("searchFriendActivity","users count : "+users.size());
+                            users.add(u);
+
+                        }
                     }
 
+
                 }
-                CustomAdapter ca = new CustomAdapter();
-                lvSearch.setAdapter(ca);
+                ca.notifyDataSetChanged();
+                //CustomAdapter ca = new CustomAdapter();
+                //lvSearch.setAdapter(ca);
+                //rvSearch.setAdapter(new CustomRAdapter(getApplicationContext(),users));
 
             }
 
@@ -99,8 +115,13 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
         }
     }
 
-    class CustomAdapter extends BaseAdapter implements View.OnClickListener
+
+
+
+    class CustomAdapter extends BaseAdapter
     {
+
+        Vector<String> ids = new Vector<>();
         @Override
         public int getCount() {
             return users.size();
@@ -113,18 +134,19 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
 
         @Override
         public long getItemId(int i) {
-            return 3;
+            return 0;
         }
 
         @SuppressLint("SetTextI18n")
         @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
+        public View getView(final int i, View view, ViewGroup viewGroup) {
+            Log.d ("searchFriendActivity","populate : "+i);
             view = getLayoutInflater().inflate(R.layout.searchfriendlayout,null);
-            setContentView(R.layout.searchfriendlayout);
-            ImageView imgSearchFriend = findViewById(R.id.imgAddFriend);
-            TextView lblSearchFriend = findViewById(R.id.lblAddFriend);
-            lblSearchFriendID = findViewById(R.id.lblAddFriendID);
-            Button btnSearchFriend = findViewById(R.id.btnAddFriend);
+            //setContentView(R.layout.searchfriendlayout);
+            ImageView imgSearchFriend = view.findViewById(R.id.imgAddFriend);
+            TextView lblSearchFriend = view.findViewById(R.id.lblAddFriend);
+            lblSearchFriendID = view.findViewById(R.id.lblAddFriendID);
+            Button btnSearchFriend = view.findViewById(R.id.btnAddFriend);
 
 
             imgSearchFriend.setImageResource(R.drawable.default_profile);
@@ -132,47 +154,46 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
             lblSearchFriend.setText(users.get(i).getUserName());
             btnSearchFriend.setText("add as friend");
 
-            btnSearchFriend.setOnClickListener(this);
+            ids.add(users.get(i).getUserID());
 
-            return view;
-        }
-
-        @Override
-        public void onClick(View v) {
-            switch(v.getId())
-            {
-                case R.id.btnAddFriend:
-                    addToFriend();
-
-            }
-        }
-
-        public void addToFriend()
-        {
-            Toast.makeText(getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
-            dbRef.child(MainActivity.authID).addListenerForSingleValueEvent(new ValueEventListener() {
-                boolean flag = true;
+            btnSearchFriend.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    dbRef.child(MainActivity.authID).child("UserFriend").addListenerForSingleValueEvent(new ValueEventListener() {
-
-
+                public void onClick(View v)
+                {
+                    Toast.makeText(getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
+                    dbRef.child(MainActivity.authID).addListenerForSingleValueEvent(new ValueEventListener() {
+                        boolean flag = true;
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            for(DataSnapshot ds : dataSnapshot.getChildren())
-                            {
-                                Log.d("searchFriendActivity",ds.getValue().toString()+":"+lblSearchFriendID.getText().toString());
-                                if(ds.getValue().toString().equals(lblSearchFriendID.getText().toString()))
-                                {
-                                    Log.d("searchFriendActivity","false");
+                            Toast.makeText(getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
+                            dbRef.child(MainActivity.authID).child("UserFriend").addListenerForSingleValueEvent(new ValueEventListener() {
 
-                                    flag = false;
+
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for(DataSnapshot ds : dataSnapshot.getChildren())
+                                    {
+                                        Log.d("searchFriendActivity",ds.getValue().toString()+":"+ids.get(i));
+                                        if(ds.getValue().toString().equals(ids.get(i)))
+                                        {
+                                            Log.d("searchFriendActivity","false");
+
+                                            flag = false;
+                                        }
+                                    }
+                                    if(flag)
+                                    {
+                                        dbRef.child(MainActivity.authID).child("UserFriend").push().setValue(ids.get(i));
+                                    }
                                 }
-                            }
-                            if(flag)
-                            {
-                                dbRef.child(MainActivity.authID).child("UserFriend").push().setValue(lblSearchFriendID.getText().toString());
-                            }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+
+
                         }
 
                         @Override
@@ -181,14 +202,17 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
                         }
                     });
 
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
+
+            return view;
+        }
+
+
+
+        public void addToFriend()
+        {
+
 
 
         }

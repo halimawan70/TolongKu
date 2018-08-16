@@ -184,9 +184,9 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                                                 storeUserData = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
                                                 storeUserData.child("userName").setValue(name);
                                                 storeUserData.child("userEmail").setValue(email);
-                                                storeUserData.child("userPhone").setValue(0);
+                                                storeUserData.child("userPhone").setValue("");
                                                 storeUserData.child("userGender").setValue(gender);
-                                                storeUserData.child("userContactNumber").setValue(0);
+                                                storeUserData.child("userContactNumber").setValue("");
                                                 storeUserData.child("userContactEmail").setValue("");
                                                 storeUserData.child("userMessage").setValue("");
                                                 storeUserData.child("userID").setValue(id);
@@ -379,9 +379,9 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                             storeUserData = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
                             storeUserData.child("userName").setValue(name);
                             storeUserData.child("userEmail").setValue(email);
-                            storeUserData.child("userPhone").setValue(0);
+                            storeUserData.child("userPhone").setValue("");
                             storeUserData.child("userGender").setValue(gender);
-                            storeUserData.child("userContactNumber").setValue(0);
+                            storeUserData.child("userContactNumber").setValue("");
                             storeUserData.child("userContactEmail").setValue("");
                             storeUserData.child("userMessage").setValue("");
                             storeUserData.child("userID").setValue(id);
@@ -402,7 +402,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
             // Signed in successfully, show authenticated UI.
 
-            startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
+            //startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.

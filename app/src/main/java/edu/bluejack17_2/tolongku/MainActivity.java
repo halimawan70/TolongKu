@@ -350,10 +350,13 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
     public void handleSignInResult(Task<GoogleSignInAccount> completedTask)
     {
+        Log.d("matag","acc");
         try {
             final GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            Log.d("matag","acc2");
             if(account != null)
             {
+
                 googleAuth = true;
                 authID = account.getId();
                 Toast.makeText(getApplicationContext(),account.getId(), Toast.LENGTH_LONG).show();
@@ -383,6 +386,8 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                             storeUserData.child("userMessage").setValue("");
                             storeUserData.child("userID").setValue(id);
                         }
+
+                        startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
                     }
 
                     @Override

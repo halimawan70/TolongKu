@@ -18,12 +18,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 public class searchFriendActivity extends AppCompatActivity implements View.OnClickListener{
@@ -36,7 +39,7 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
     CustomAdapter ca;
 
     RecyclerView rvSearch;
-
+    DatabaseReference notifRef;
     DatabaseReference dbRef;
 
 
@@ -51,6 +54,7 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
         //rvSearch=findViewById(R.id.rvSearch);
 
         users = new Vector<>();
+        notifRef = FirebaseDatabase.getInstance().getReference().child("Notifications");
         dbRef = FirebaseDatabase.getInstance().getReference().child("Users");
         if(lvSearch == null)
         {
@@ -184,6 +188,10 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
                                     if(flag)
                                     {
                                         dbRef.child(MainActivity.authID).child("UserFriend").push().setValue(ids.get(i));
+                                        HashMap<String,String> notificationData = new HashMap<String, String>();
+                                        notificationData.put("from",MainActivity.authID);
+                                        notificationData.put("type","reqiest");
+                                        notifRef.child(ids.get(i)).push().setValue(notificationData);
                                     }
                                 }
 

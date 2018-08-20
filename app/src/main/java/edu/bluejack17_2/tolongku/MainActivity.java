@@ -35,9 +35,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -49,6 +51,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.json.JSONObject;
 
@@ -155,57 +158,73 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
         loginButton.registerCallback(callbackManager,new FacebookCallback<LoginResult>(){
 
-            public void onSuccess(LoginResult loginResult)
+            public void onSuccess(final LoginResult loginResult)
             {
-                facebookAuth = true;
-                Log.e("facebook","sampe sini");
-                GraphRequest.newMeRequest(
-                        loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-                            @Override
-                            public void onCompleted(final JSONObject object, GraphResponse response) {
-                                if (response.getError() != null) {
-                                    // handle error
-                                } else {
-                                    authID = object.optString("id");
-                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-                                    ref.child("Users").child(object.optString("id")).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            if(dataSnapshot.exists()){
-                                                // username already exists
-                                            } else {
-                                                String name= object.optString("name");
-                                                String id = object.optString("id");
-                                                String gender = object.optString("gender");
-                                                String email = object.optString("email");
+                AuthCredential credential = FacebookAuthProvider.getCredential(loginResult.getAccessToken().getToken());
+                mAuth.signInWithCredential(credential).addOnCompleteListener( new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        facebookAuth = true;
+                        Log.e("facebook","sampe sini");
+                        GraphRequest.newMeRequest(
+                                loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(final JSONObject object, GraphResponse response) {
+                                        if (response.getError() != null) {
+                                            // handle error
+                                        } else {
+                                            authID = object.optString("id");
+                                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                                            ref.child("Users").child(object.optString("id")).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                    if(dataSnapshot.exists()){
+                                                        String id = object.optString("id");
+                                                        storeUserData = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
+                                                        String deviceToken = FirebaseInstanceId.getInstance().getToken();
+                                                        storeUserData.child("userDeviceToken").setValue(deviceToken);
+                                                        // username already exists
+                                                    } else {
+                                                        String name= object.optString("name");
+                                                        String id = object.optString("id");
+                                                        String gender = object.optString("gender");
+                                                        String email = object.optString("email");
+                                                        String deviceToken = FirebaseInstanceId.getInstance().getToken();
+                                                        Log.e("facebook",name+" "+id+" "+gender+" "+email);
 
-                                                Log.e("facebook",name+" "+id+" "+gender+" "+email);
+                                                        storeUserData = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
+                                                        storeUserData.child("userName").setValue(name);
+                                                        storeUserData.child("userEmail").setValue(email);
+                                                        storeUserData.child("userPhone").setValue("");
+                                                        storeUserData.child("userGender").setValue(gender);
+                                                        storeUserData.child("userContactNumber").setValue("");
+                                                        storeUserData.child("userContactEmail").setValue("");
+                                                        storeUserData.child("userMessage").setValue("");
+                                                        storeUserData.child("userID").setValue(id);
+                                                        storeUserData.child("userDeviceToken").setValue(deviceToken);
 
-                                                storeUserData = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
-                                                storeUserData.child("userName").setValue(name);
-                                                storeUserData.child("userEmail").setValue(email);
-                                                storeUserData.child("userPhone").setValue("");
-                                                storeUserData.child("userGender").setValue(gender);
-                                                storeUserData.child("userContactNumber").setValue("");
-                                                storeUserData.child("userContactEmail").setValue("");
-                                                storeUserData.child("userMessage").setValue("");
-                                                storeUserData.child("userID").setValue(id);
+                                                    }
+                                                }
 
+                                                @Override
+                                                public void onCancelled(DatabaseError databaseError) {
 
-                                            }
+                                                }
+                                            });
+
+                                            startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
                                         }
+                                    }
 
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
+                                }).executeAsync();
 
-                                        }
-                                    });
+                    }
+                });
 
-                                    startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
-                                }
-                            }
 
-                        }).executeAsync();
+
+
+
 
             }
 
@@ -275,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
     public void googleSignIn()
     {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
+                .requestEmail().requestIdToken(getString(R.string.default_web_client_id))
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
@@ -316,10 +335,20 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                                 return;
                             }
                             authID = mAuth.getCurrentUser().getUid();
-//                            updateUI(user);
-                            Toast.makeText(MainActivity.this,
-                                    "Authentication succeeded.", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(getApplicationContext(),NavigationActivity.class));
+                            String deviceToken = FirebaseInstanceId.getInstance().getToken();
+                            storeUserData = FirebaseDatabase.getInstance().getReference().child("Users").child(authID).child("userDeviceToken");
+                            storeUserData.setValue(deviceToken).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(MainActivity.this,
+                                            "Authentication succeeded.", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(getApplicationContext(),NavigationActivity.class));
+                                }
+                            });
+
+
+
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("Login", "signInWithEmail:failure", task.getException());
@@ -356,45 +385,58 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
             Log.d("matag","acc2");
             if(account != null)
             {
-
-                googleAuth = true;
-                authID = account.getId();
-                Toast.makeText(getApplicationContext(),account.getId(), Toast.LENGTH_LONG).show();
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-                ref.child("Users").child(account.getId()).addValueEventListener(new ValueEventListener() {
+                AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
+                mAuth.signInWithCredential(credential).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()){
-                            Log.d("MainActivity","ada biji");
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        googleAuth = true;
+                        authID = account.getId();
+                        Toast.makeText(getApplicationContext(),account.getId(), Toast.LENGTH_LONG).show();
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                        ref.child("Users").child(account.getId()).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.exists()){
+                                    Log.d("MainActivity","ada biji");
+                                    String id = account.getId();
+                                    storeUserData = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
+                                    String deviceToken = FirebaseInstanceId.getInstance().getToken();
+                                    storeUserData.child("userDeviceToken").setValue(deviceToken);
 
-                            // use "username" already exists
-                            // Let the user know he needs to pick another username.
-                        } else {
-                            Log.d("MainActivity",""+dataSnapshot.getChildrenCount());
-                            String id = account.getId();
-                            String name = account.getDisplayName();
-                            String email = account.getEmail();
-                            String gender = "";
+                                    // use "username" already exists
+                                    // Let the user know he needs to pick another username.
+                                } else {
+                                    Log.d("MainActivity",""+dataSnapshot.getChildrenCount());
+                                    String id = account.getId();
+                                    String name = account.getDisplayName();
+                                    String email = account.getEmail();
+                                    String gender = "";
+                                    String deviceToken = FirebaseInstanceId.getInstance().getToken();
 
-                            storeUserData = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
-                            storeUserData.child("userName").setValue(name);
-                            storeUserData.child("userEmail").setValue(email);
-                            storeUserData.child("userPhone").setValue("");
-                            storeUserData.child("userGender").setValue(gender);
-                            storeUserData.child("userContactNumber").setValue("");
-                            storeUserData.child("userContactEmail").setValue("");
-                            storeUserData.child("userMessage").setValue("");
-                            storeUserData.child("userID").setValue(id);
-                        }
+                                    storeUserData = FirebaseDatabase.getInstance().getReference().child("Users").child(id);
+                                    storeUserData.child("userName").setValue(name);
+                                    storeUserData.child("userEmail").setValue(email);
+                                    storeUserData.child("userPhone").setValue("");
+                                    storeUserData.child("userGender").setValue(gender);
+                                    storeUserData.child("userContactNumber").setValue("");
+                                    storeUserData.child("userContactEmail").setValue("");
+                                    storeUserData.child("userMessage").setValue("");
+                                    storeUserData.child("userID").setValue(id);
+                                    storeUserData.child("userDeviceToken").setValue(deviceToken);
+                                }
 
-                        startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
-                    }
+                                startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
+                            }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
 
                     }
                 });
+
 
 
 
@@ -402,7 +444,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
             // Signed in successfully, show authenticated UI.
 
-            //startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
+            startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.

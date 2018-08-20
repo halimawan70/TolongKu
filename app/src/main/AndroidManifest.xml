@@ -63,7 +63,8 @@
             android:label="@string/title_activity_navigation"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".settingActivity" />
-        <activity android:name=".searchFriendActivity"></activity>
+        <activity android:name=".searchFriendActivity" />
+        <activity android:name=".ChatActivity"></activity>
     </application>
 
 </manifest>

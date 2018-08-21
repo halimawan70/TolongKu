@@ -2,7 +2,9 @@ package edu.bluejack17_2.tolongku;
 
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -18,6 +20,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -26,6 +32,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.Vector;
 
 
 /**
@@ -38,6 +46,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private LatLng mDefaultLocation;
     private View view;
 
+    private GeofencingClient mGeofencingClient;
+    private Vector<Geofence> mGeofenceList;
+    private PendingIntent mGeofencePendingIntent;
+
 
     public final static int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     LocationManager locationManager;
@@ -47,15 +59,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        // Construct a GeoDataClient.
-//        mGeoDataClient = Places.getGeoDataClient(getContext(), null);
-//
-//        // Construct a PlaceDetectionClient.
-//        mPlaceDetectionClient = Places.getPlaceDetectionClient(getContext(), null);
-//
-//        // Construct a FusedLocationProviderClient.
-//        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+        mGeofencingClient = LocationServices.getGeofencingClient(this.getContext());
+        mGeofenceList = new Vector<Geofence>();
     }
 
     private void getLocationPermission() {
@@ -100,32 +105,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setMyLocationEnabled(true);
 
-//        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
-//
-//        mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(getActivity(),
-//                new OnSuccessListener<Location>() {
-//                    @Override
-//                    public void onSuccess(Location location) {
-//                        Toast.makeText(getActivity(), "Success", Toast.LENGTH_SHORT).show();
-//                        if(location != null){
-//                            mDefaultLocation = new LatLng(
-//                                    location.getLongitude(),
-//                                    location.getLatitude()
-//                            );
-//                            Toast.makeText(getActivity(), "Updated", Toast.LENGTH_SHORT).show();
-//                            Toast.makeText(getActivity(), mDefaultLocation.latitude + " " + mDefaultLocation.longitude, Toast.LENGTH_SHORT).show();
-//
-//                            CameraPosition cameraPosition = CameraPosition.builder().target(mDefaultLocation)
-//                                    .zoom(16).bearing(0).build();
-//
-//                            mMap.addMarker(new MarkerOptions().position(mDefaultLocation)
-//                                    .title("You are here!")).setSnippet("This is your approximate current location.");
-//
-//                            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//                        }
-//                    }
-//                });
-
         Toast.makeText(getActivity(), "Done", Toast.LENGTH_SHORT).show();
         CameraPosition cameraPosition = CameraPosition.builder().target(mDefaultLocation)
                 .zoom(16).bearing(0).build();
@@ -135,11 +114,32 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-//        getLocationPermission();
-//        updateLocationUI();
-//        getDeviceLocation();
-//
-//        showCurrentPlace();
+        Geofence geofence = new Geofence.Builder().setRequestId("test").setCircularRegion(mDefaultLocation.latitude,
+                mDefaultLocation.longitude, 100).setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
+                .build();
+
+        mGeofenceList.add(geofence);
+    }
+
+    private GeofencingRequest getGeofencingRequest(){
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(mGeofenceList);
+        return builder.build();
+    }
+
+    private PendingIntent getGeofencePendingIntent(){
+        // Reuse the PendingIntent if we already have it.
+        if(mGeofencePendingIntent != null){
+            return mGeofencePendingIntent;
+        }
+        Intent intent = new Intent(this.getContext(), GeofenceTransitionService.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
+        // calling addGeofences() and removeGeofences()
+        mGeofencePendingIntent = PendingIntent.getService(this.getContext(), 0,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return mGeofencePendingIntent;
     }
     
     public MapFragment() {

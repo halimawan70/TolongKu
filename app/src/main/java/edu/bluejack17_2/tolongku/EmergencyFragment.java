@@ -95,6 +95,7 @@ public class EmergencyFragment extends Fragment implements View.OnClickListener 
                     Log.d("EmergencyFragment", u.printData());
                     sms.sendTextMessage(u.getUserContactNumber(),null,"Message from tolongku : "+u.getUserMessage(),null,null);
                     Toast.makeText(getContext(),"SMS Sent to : "+u.getUserContactNumber(), Toast.LENGTH_LONG).show();
+
                 }
 
                 @Override
@@ -102,6 +103,8 @@ public class EmergencyFragment extends Fragment implements View.OnClickListener 
 
                 }
             });
+
+
 
 
         }

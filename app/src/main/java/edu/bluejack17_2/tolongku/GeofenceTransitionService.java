@@ -59,7 +59,6 @@ public class GeofenceTransitionService extends IntentService {
 
             Location triggeringLocation = mGeofencingEvent.getTriggeringLocation();
 
-            //TODO - What happens if a geofence triggers?
             sendNotification(geoTransDetails);
 
             Toast.makeText(this,  "Kena!", Toast.LENGTH_SHORT).show();

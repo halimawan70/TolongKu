@@ -35,6 +35,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -61,8 +63,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private Vector<Geofence> mGeofenceList;
     private PendingIntent mGeofencePendingIntent;
 
+    public static final int NEW_MARKER_REQUEST_CODE = 2;
+    public final static String GEOFENCE_REQUEST_CODE = "TolongKuGeofence";
 
     public final static int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    public final static int AREA_DANGEROUS = 10;
+    public final static int AREA_SHELTER = 11;
+    public final static int AREA_HELP = 12;
+    public final static int AREA_MARKING_CANCELLED = 13;
+
     LocationManager locationManager;
 
     private boolean mLocationPermissionGranted = false;
@@ -108,15 +117,129 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return mMap.addCircle(circleOptions);
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
+    private BitmapDescriptor getMarkerIcon(String color){
+        float[] hsv = new float[3];
+        Color.colorToHSV(Color.parseColor(color), hsv);
+        return BitmapDescriptorFactory.defaultMarker(hsv[0]);
+    }
+
+    private Marker addMarker(LatLng position, String title, String snippet){
+        Marker marker = mMap.addMarker(new MarkerOptions().position(position)
+                .title(title));
+
+        marker.setSnippet(snippet);
+
+        return marker;
+    }
+
+    private Marker addMarker(LatLng position, String title, String snippet, String color){
+        Marker marker = mMap.addMarker(new MarkerOptions().position(position)
+                .title(title).icon(getMarkerIcon(color)));
+
+        marker.setSnippet(snippet);
+
+        return marker;
+    }
+
+    private boolean checkPermission(){
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION)
                         != PackageManager.PERMISSION_GRANTED) {
             getLocationPermission();
-            return;
+            return false;
         }
+        return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(!checkPermission())
+            return;
+        if(requestCode == NEW_MARKER_REQUEST_CODE){
+
+            int status = data.getIntExtra("status", -1);
+            Log.d("Map", "Add New Marker Status: " + status);
+            LatLng position = new LatLng(data.getDoubleExtra("latitude", -1),
+                    data.getDoubleExtra("longitude", -1));
+
+            if(status != -1){
+
+                if(status == AREA_DANGEROUS){
+
+                    Marker marker = addMarker(position, "Dangerous Area",
+                            "This place is marked as dangerous", "#c62828");
+
+                    Log.d("Map", "Dangerous marker successfully placed.");
+
+                    Geofence geofence = new Geofence.Builder().setRequestId(GEOFENCE_REQUEST_CODE).
+                            setCircularRegion(position.latitude, position.longitude, 100)
+                            .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                                    Geofence.GEOFENCE_TRANSITION_EXIT)
+                            .build();
+
+                    mGeofenceList.add(geofence);
+
+                    mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+                            .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d("Geofence", "Success!");
+                                }
+                            }).addOnFailureListener(this.getActivity(),
+                            new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.d("Geofence", "Failed!");
+                                }
+                            });
+
+                    Circle circle = circleLocation(position,
+                        Color.argb(255 ,183, 28, 28),
+                        Color.argb(50 ,244,67,54));
+
+                    marker.setTag(new MarkerData(MarkerData.DANGEROUS, position, circle,
+                            geofence));
+                }else if(status == AREA_SHELTER){
+
+                    Marker marker = addMarker(position, "Shelter Area",
+                            "This place is marked as a shelter", "#1976D2");
+
+                    Circle circle = circleLocation(position,
+                            Color.argb(255,25,118,210),
+                            Color.argb(50 ,33,150,243));
+
+                    Log.d("Map", "Shelter marker successfully placed.");
+
+                    marker.setTag(new MarkerData(MarkerData.SHELTER, position, circle));
+
+                }else if(status == AREA_HELP){
+
+                    Marker marker = addMarker(position, "Help Area",
+                            "This place is offering help", "#1976D2");
+
+                    Circle circle = circleLocation(position,
+                            Color.argb(255,46,125,50),
+                            Color.argb(50 ,76,175,80));
+
+                    Log.d("Map", "Help marker successfully placed.");
+
+                    marker.setTag(new MarkerData(MarkerData.HELP, position, circle));
+
+                }
+            }else{
+                Log.d("Map", "Status return was erroneous.");
+            }
+
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        if(!checkPermission())
+            return;
+
         mDefaultLocation = new LatLng(40.689247, -74.044502);
 
         MapsInitializer.initialize(getContext());
@@ -128,52 +251,74 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             mDefaultLocation = new LatLng(location.getLatitude(), location.getLongitude());
         }
 
+//        mDefaultLocation = new LatLng(-6.203549, 106.7846679);
+
         mMap = googleMap;
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mMap.setMyLocationEnabled(true);
+
+        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                Log.d("Map", "Touched the map at " + latLng.latitude + " "
+                + latLng.longitude);
+
+                Intent intent = new Intent(getActivity(), NewMarkerActivity.class);
+                intent.putExtra("latitude", latLng.latitude);
+                intent.putExtra("longitude", latLng.longitude);
+                startActivityForResult(intent, NEW_MARKER_REQUEST_CODE);
+            }
+        });
+
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                MarkerData markerData = (MarkerData)marker.getTag();
+
+                
+            }
+        });
 
         Toast.makeText(getActivity(), "Done", Toast.LENGTH_SHORT).show();
         CameraPosition cameraPosition = CameraPosition.builder().target(mDefaultLocation)
                 .zoom(16).bearing(0).build();
 
-        Marker playerMarker = googleMap.addMarker(new MarkerOptions().position(mDefaultLocation)
-                .title("You are here!"));
-
-        playerMarker.setSnippet("This is your approximate current location.");
-
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-        Geofence geofence = new Geofence.Builder().setRequestId("test").setCircularRegion(mDefaultLocation.latitude,
-                mDefaultLocation.longitude, 100).setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
-                .build();
 
-        mGeofenceList.add(geofence);
-
-        mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
-                .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Geofence", "Success!");
-                    }
-                }).addOnFailureListener(this.getActivity(),
-                new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("Geofence", "Failed!");
-                    }
-                });
-
-        Circle geoFenceCircle = circleLocation(playerMarker.getPosition(),
-                Color.argb(255 ,3, 169, 244),
-                Color.argb(50 ,41,182,246));
-
-//        CircleOptions circleOptions = new CircleOptions().center(playerMarker.getPosition())
-//                .strokeColor(Color.argb(255, 70, 70, 70))
-//                .fillColor(Color.argb(180, 150, 150, 150))
-//                .radius(100);
+//        Marker playerMarker = googleMap.addMarker(new MarkerOptions().position(mDefaultLocation)
+//                .title("You are here!"));
 //
-//        Circle geofenceLimits = googleMap.addCircle(circleOptions);
+//        playerMarker.setSnippet("This is your approximate current location.");
+
+
+
+//        Geofence geofence = new Geofence.Builder().setRequestId(GEOFENCE_REQUEST_CODE).
+//                setCircularRegion(mDefaultLocation.latitude, mDefaultLocation.longitude,
+//                        100).setExpirationDuration(Geofence.NEVER_EXPIRE)
+//                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+//                        Geofence.GEOFENCE_TRANSITION_EXIT)
+//                .build();
+//
+//        mGeofenceList.add(geofence);
+
+//        mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+//                .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void aVoid) {
+//                        Log.d("Geofence", "Success!");
+//                    }
+//                }).addOnFailureListener(this.getActivity(),
+//                new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Log.d("Geofence", "Failed!");
+//                    }
+//                });
+
+//        Circle geoFenceCircle = circleLocation(playerMarker.getPosition(),
+//                Color.argb(255 ,3, 169, 244),
+//                Color.argb(50 ,41,182,246));
     }
 
     private GeofencingRequest getGeofencingRequest(){

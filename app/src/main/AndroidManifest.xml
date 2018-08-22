@@ -64,10 +64,12 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".settingActivity" />
         <activity android:name=".searchFriendActivity" />
-        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".ChatActivity" />
 
         <service android:name=".GeofenceTransitionService" />
 
+        <activity android:name=".NewMarkerActivity" />
+        <activity android:name=".MarkerActions"></activity>
     </application>
 
 </manifest>

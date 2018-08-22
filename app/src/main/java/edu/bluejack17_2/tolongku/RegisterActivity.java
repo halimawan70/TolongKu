@@ -118,15 +118,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             return;
         }
 
-
         mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful())
                 {
                     String currUserId = mAuth.getCurrentUser().getUid();
-
-
                     storeUserData = FirebaseDatabase.getInstance().getReference().child("Users").child(currUserId);
                     storeUserData.child("userName").setValue(txtName.getText().toString().trim());
                     storeUserData.child("userEmail").setValue(txtEmail.getText().toString().trim());
@@ -176,9 +173,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             }
                         }
                     });
-
-
-
                 }
                 else
                 {

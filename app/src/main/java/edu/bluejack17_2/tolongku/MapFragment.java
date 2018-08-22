@@ -46,6 +46,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.util.ArrayList;
+import java.util.UUID;
 import java.util.Vector;
 
 
@@ -64,7 +66,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private PendingIntent mGeofencePendingIntent;
 
     public static final int NEW_MARKER_REQUEST_CODE = 2;
-    public final static String GEOFENCE_REQUEST_CODE = "TolongKuGeofence";
+    public static final int MARKER_ACTION_REQUEST_CODE = 3;
+    public static String GEOFENCE_REQUEST_CODE = "TolongKuGeofence";
 
     public final static int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     public final static int AREA_DANGEROUS = 10;
@@ -179,6 +182,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                     Geofence.GEOFENCE_TRANSITION_EXIT)
                             .build();
 
+//                    GEOFENCE_REQUEST_CODE = String.valueOf((Integer.parseInt(GEOFENCE_REQUEST_CODE)
+//                            + 1));
+
                     mGeofenceList.add(geofence);
 
                     mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
@@ -199,8 +205,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         Color.argb(255 ,183, 28, 28),
                         Color.argb(50 ,244,67,54));
 
-                    marker.setTag(new MarkerData(MarkerData.DANGEROUS, position, circle,
+                    marker.setTag(new MarkerData(MarkerData.DANGEROUS, marker, position, circle,
                             geofence));
+
                 }else if(status == AREA_SHELTER){
 
                     Marker marker = addMarker(position, "Shelter Area",
@@ -212,7 +219,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                     Log.d("Map", "Shelter marker successfully placed.");
 
-                    marker.setTag(new MarkerData(MarkerData.SHELTER, position, circle));
+                    marker.setTag(new MarkerData(MarkerData.SHELTER, marker, position, circle));
 
                 }else if(status == AREA_HELP){
 
@@ -225,13 +232,70 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                     Log.d("Map", "Help marker successfully placed.");
 
-                    marker.setTag(new MarkerData(MarkerData.HELP, position, circle));
+                    marker.setTag(new MarkerData(MarkerData.HELP, marker, position, circle));
 
                 }
             }else{
                 Log.d("Map", "Status return was erroneous.");
             }
 
+        }else if(requestCode == MARKER_ACTION_REQUEST_CODE){
+
+            MarkerData markerData = (MarkerData) data.getSerializableExtra("markerData");
+            int action = data.getIntExtra("action", -1);
+
+            if(markerData != null && action != -1){
+
+                if(action == MarkerActions.REMOVE_CIRCLE){
+                    Circle circle = markerData.getCircle();
+                    Marker marker = markerData.getMarker();
+
+                    if(circle != null){
+                        circle.remove();
+                    }else{
+                        Log.d("Map", "Circle is already NULL!");
+                    }
+
+                    if(marker != null){
+                        marker.remove();
+                    }else{
+                        Log.d("Map", "Marker is already NULL!");
+                    }
+
+                    Log.d("Map","Successfully removed Marker and Circle!");
+                }else if(action == MarkerActions.REMOVE_ALL){
+                    Circle circle = markerData.getCircle();
+                    Marker marker = markerData.getMarker();
+                    Geofence geofence = markerData.getGeofence();
+
+                    if(circle != null){
+                        circle.remove();
+                    }else{
+                        Log.d("Map", "Circle is already NULL!");
+                    }
+
+                    if(marker != null){
+                        marker.remove();
+                    }else{
+                        Log.d("Map", "Marker is already NULL!");
+                    }
+
+                    if(geofence != null){
+                        ArrayList<String> ids = new ArrayList<>();
+                        ids.add(geofence.getRequestId());
+                        mGeofencingClient.removeGeofences(ids);
+
+                        // TODO - Remove Geofence from database stored in variable geofence
+                    }
+                    Log.d("Map","Successfully removed Marker, Geofence and Circle!");
+                }else if(action == MarkerActions.DO_NOTHING){
+                    Log.d("Map", "Successfully did nothing.");
+                }else{
+                    Log.d("Map", "Action code is not working properly.");
+                }
+            }else{
+                Log.d("Map", "Marker Data is NULL or action is -1");
+            }
         }
     }
 
@@ -273,9 +337,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                MarkerData markerData = (MarkerData)marker.getTag();
+                MarkerData markerData = (MarkerData) marker.getTag();
 
-                
+                Intent intent = new Intent(getActivity(), MarkerActions.class);
+                intent.putExtra("markerData", markerData);
+                startActivityForResult(intent, MARKER_ACTION_REQUEST_CODE);
             }
         });
 
@@ -340,7 +406,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         return mGeofencePendingIntent;
     }
-    
+
     public MapFragment() {
         // Required empty public constructor
     }

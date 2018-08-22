@@ -40,6 +40,9 @@ public class GeofenceTransitionService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+
+        Log.d("Geofence", "Handling Intent.");
+
         GeofencingEvent mGeofencingEvent = GeofencingEvent.fromIntent(intent);
 
         if(mGeofencingEvent.hasError()){

@@ -65,6 +65,9 @@
         <activity android:name=".settingActivity" />
         <activity android:name=".searchFriendActivity" />
         <activity android:name=".ChatActivity"></activity>
+
+        <service android:name=".GeofenceTransitionService" />
+
     </application>
 
 </manifest>

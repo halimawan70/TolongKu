@@ -2,18 +2,24 @@ package edu.bluejack17_2.tolongku;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +36,13 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.Vector;
 
@@ -41,7 +52,7 @@ import java.util.Vector;
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    private static GoogleMap mMap;
     private MapView mapView;
     private LatLng mDefaultLocation;
     private View view;
@@ -81,6 +92,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    public static Circle circleLocation(LatLng location, int strokeColor, int fillColor){
+
+        if(mMap == null){
+            Log.d("Geofence Circling", "Map have not been initialized.");
+            return null;
+        }
+
+        CircleOptions circleOptions = new CircleOptions().
+                center(location)
+                .strokeColor(strokeColor)
+                .fillColor(fillColor)
+                .radius(100);
+
+        return mMap.addCircle(circleOptions);
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
@@ -109,8 +136,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         CameraPosition cameraPosition = CameraPosition.builder().target(mDefaultLocation)
                 .zoom(16).bearing(0).build();
 
-        googleMap.addMarker(new MarkerOptions().position(mDefaultLocation)
-                .title("You are here!")).setSnippet("This is your approximate current location.");
+        Marker playerMarker = googleMap.addMarker(new MarkerOptions().position(mDefaultLocation)
+                .title("You are here!"));
+
+        playerMarker.setSnippet("This is your approximate current location.");
 
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
@@ -120,6 +149,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 .build();
 
         mGeofenceList.add(geofence);
+
+        mGeofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent())
+                .addOnSuccessListener(this.getActivity(), new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Geofence", "Success!");
+                    }
+                }).addOnFailureListener(this.getActivity(),
+                new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Geofence", "Failed!");
+                    }
+                });
+
+        Circle geoFenceCircle = circleLocation(playerMarker.getPosition(),
+                Color.argb(255 ,3, 169, 244),
+                Color.argb(50 ,41,182,246));
+
+//        CircleOptions circleOptions = new CircleOptions().center(playerMarker.getPosition())
+//                .strokeColor(Color.argb(255, 70, 70, 70))
+//                .fillColor(Color.argb(180, 150, 150, 150))
+//                .radius(100);
+//
+//        Circle geofenceLimits = googleMap.addCircle(circleOptions);
     }
 
     private GeofencingRequest getGeofencingRequest(){

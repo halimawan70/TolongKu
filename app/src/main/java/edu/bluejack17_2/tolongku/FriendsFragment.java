@@ -140,6 +140,8 @@ public class FriendsFragment extends Fragment {
         populateFriendList();
 
 
+
+
     }
 
     @Override
@@ -206,16 +208,7 @@ public class FriendsFragment extends Fragment {
                     Intent i = new Intent();
                 }
             });
-
-
             return view;
-
         }
-
-
     }
-
-
-
-
 }

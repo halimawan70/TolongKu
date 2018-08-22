@@ -53,11 +53,6 @@ public class NavigationActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
-
-
-
-
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -160,11 +155,7 @@ public class NavigationActivity extends AppCompatActivity
             startActivity(i);
         }
 
-
-
-
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
-
     }
 
     public void userSetting()
@@ -178,8 +169,6 @@ public class NavigationActivity extends AppCompatActivity
         Intent i = new Intent(getApplicationContext(), searchFriendActivity.class);
         startActivity(i);
     }
-
-
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {

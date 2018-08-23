@@ -64,7 +64,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".settingActivity" />
         <activity android:name=".searchFriendActivity" />
-        <activity android:name=".ChatActivity" />
+        <activity android:name=".ChatActivity"
+            android:parentActivityName=".NavigationActivity">
+        </activity>
 
         <service android:name=".GeofenceTransitionService" />
 

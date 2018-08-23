@@ -6,4 +6,44 @@
     android:layout_height="match_parent"
     tools:context=".ChatActivity">
 
+    <include
+        android:id="@+id/layoutChatTop"
+        layout="@layout/chatcustombar"
+        android:layout_height="257dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="264dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></include>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="0dp">
+
+
+        <ImageView
+            android:id="@+id/imgChatImage"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_select_image" />
+
+        <EditText
+            android:id="@+id/txtChatContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <ImageView
+            android:id="@+id/imgChatSend"
+            android:layout_width="18dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:srcCompat="@mipmap/ic_send" />
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

@@ -75,6 +75,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public final static int AREA_HELP = 12;
     public final static int AREA_MARKING_CANCELLED = 13;
 
+    private Circle currCircle;
+    private Geofence currGeofence;
+    private Marker currMarker;
+    private LatLng currPosition;
+
     LocationManager locationManager;
 
     private boolean mLocationPermissionGranted = false;
@@ -153,6 +158,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             return false;
         }
         return true;
+    }
+
+    public void resetCurrentDeleteTarget(){
+        currGeofence = null;
+        currCircle = null;
+        currPosition = null;
+        currMarker = null;
     }
 
     @Override
@@ -241,14 +253,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         }else if(requestCode == MARKER_ACTION_REQUEST_CODE){
 
-            MarkerData markerData = (MarkerData) data.getSerializableExtra("markerData");
             int action = data.getIntExtra("action", -1);
 
-            if(markerData != null && action != -1){
+            if(action != -1){
 
                 if(action == MarkerActions.REMOVE_CIRCLE){
-                    Circle circle = markerData.getCircle();
-                    Marker marker = markerData.getMarker();
+                    Circle circle = currCircle;
+                    Marker marker = currMarker;
 
                     if(circle != null){
                         circle.remove();
@@ -262,11 +273,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         Log.d("Map", "Marker is already NULL!");
                     }
 
+                    resetCurrentDeleteTarget();
+
                     Log.d("Map","Successfully removed Marker and Circle!");
                 }else if(action == MarkerActions.REMOVE_ALL){
-                    Circle circle = markerData.getCircle();
-                    Marker marker = markerData.getMarker();
-                    Geofence geofence = markerData.getGeofence();
+                    Circle circle = currCircle;
+                    Marker marker = currMarker;
+                    Geofence geofence = currGeofence;
 
                     if(circle != null){
                         circle.remove();
@@ -287,6 +300,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                         // TODO - Remove Geofence from database stored in variable geofence
                     }
+
+                    resetCurrentDeleteTarget();
+
                     Log.d("Map","Successfully removed Marker, Geofence and Circle!");
                 }else if(action == MarkerActions.DO_NOTHING){
                     Log.d("Map", "Successfully did nothing.");
@@ -339,8 +355,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             public void onInfoWindowClick(Marker marker) {
                 MarkerData markerData = (MarkerData) marker.getTag();
 
+                resetCurrentDeleteTarget();
+                currMarker = marker;
+                currCircle = markerData.getCircle();
+                currGeofence = markerData.getGeofence();
+                currPosition = markerData.getPosition();
+
+                Log.d("Map", currCircle.toString());
+
                 Intent intent = new Intent(getActivity(), MarkerActions.class);
-                intent.putExtra("markerData", markerData);
+                intent.putExtra("status", markerData.getStatus());
                 startActivityForResult(intent, MARKER_ACTION_REQUEST_CODE);
             }
         });

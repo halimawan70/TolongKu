@@ -180,6 +180,20 @@ public class FriendsFragment extends Fragment {
 
             imgFriendList.setImageResource(R.drawable.default_profile);
             txtFriendListName.setText(users.get(i).getUserName());
+            final String currUserName  = users.get(i).getUserName();
+            final String currID = users.get(i).getUserID();
+
+            btnFriendListChat.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(getActivity().getApplicationContext(), ChatActivity.class);
+                    i.putExtra("username",currUserName);
+                    i.putExtra("id",currID);
+                    Toast.makeText(getActivity().getApplicationContext(),"initiate",Toast.LENGTH_SHORT).show();
+                    Log.d("FriendsFragment","initiate");
+                    startActivity(i);
+                }
+            });
 
             btnFriendListCall.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -202,12 +216,8 @@ public class FriendsFragment extends Fragment {
                 }
             });
 
-            btnFriendListChat.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent i = new Intent();
-                }
-            });
+
+
             return view;
         }
     }

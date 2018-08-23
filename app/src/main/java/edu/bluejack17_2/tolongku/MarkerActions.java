@@ -20,9 +20,6 @@ public class MarkerActions extends AppCompatActivity {
     public static final int REMOVE_CIRCLE = 2;
     public static final int REMOVE_ALL = 3;
     int action;
-    LatLng position;
-    Circle circle;
-    Geofence geofence;
     MarkerData markerData;
     TextView lblStatus;
     Button btnCall;
@@ -38,14 +35,15 @@ public class MarkerActions extends AppCompatActivity {
 
         Intent startingIntent = getIntent();
 
-        markerData = (MarkerData)startingIntent.getSerializableExtra("markerData");
+        status = startingIntent.getIntExtra("status", -1);
 
-        if(markerData != null){
+        lblStatus = findViewById(R.id.txtAreaStatus);
+        btnCall = findViewById(R.id.btnCallForHelp);
+        btnMessage = findViewById(R.id.btnMessageForHelp);
+        btnDelete = findViewById(R.id.btnDeleteMarker);
+        btnCancel = findViewById(R.id.btnCancel);
 
-            position = markerData.getPosition();
-            circle = markerData.getCircle();
-            geofence = markerData.getGeofence();
-            status = markerData.getStatus();
+        if(status != -1){
 
             if(status == MarkerData.DANGEROUS){
 
@@ -120,7 +118,7 @@ public class MarkerActions extends AppCompatActivity {
 
     private void returnResults(){
         Intent intent = new Intent(this, NavigationActivity.class);
-        intent.putExtra("markerData", markerData);
+        intent.putExtra("status", status);
         intent.putExtra("action", action);
         setResult(MapFragment.MARKER_ACTION_REQUEST_CODE, intent);
         finish();

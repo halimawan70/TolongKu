@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <ImageView
+        android:id="@+id/imgChatProfile"
+        android:layout_width="54dp"
+        android:layout_height="51dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:padding="5dp"
+        app:srcCompat="@drawable/default_profile" />
+
+    <ImageView
+        android:id="@+id/imgChatProfile2"
+        android:layout_width="54dp"
+        android:layout_height="51dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:padding="5dp"
+        app:srcCompat="@drawable/default_profile" />
+
+    <TextView
+        android:id="@+id/txtChatText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="62dp"
+        android:background="@drawable/message_text_background"
+        android:text="TextView"
+        android:textColor="#FFFFFF"
+        tools:padding="25dp" />
+
+    <TextView
+        android:id="@+id/txtChatText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="63dp"
+        android:background="@drawable/message_text_background2"
+        android:text="TextView"
+        android:textColor="#FFFFFF"
+
+        tools:padding="25dp" />
+</RelativeLayout>

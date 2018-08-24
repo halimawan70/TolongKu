@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class NewMarkerActivity extends AppCompatActivity {
@@ -15,8 +17,10 @@ public class NewMarkerActivity extends AppCompatActivity {
     RadioButton radioShelter;
     RadioButton radioHelp;
     Button btnSaveChanges;
+    EditText txtRadius;
     double latitude;
     double longitude;
+    int radius;
     int status;
 
     @Override
@@ -35,10 +39,21 @@ public class NewMarkerActivity extends AppCompatActivity {
         radioShelter = findViewById(R.id.radioShelter);
         radioHelp = findViewById(R.id.radioHelp);
         btnSaveChanges = findViewById(R.id.btnSaveChanges);
+        txtRadius = findViewById(R.id.txtRadius);
+        txtRadius.setText("100");
 
         btnSaveChanges.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                radius = Integer.parseInt(txtRadius.getText().toString());
+
+                if(radius < 10){
+                    Toast.makeText(NewMarkerActivity.this,
+                            "Radius must not be less than 10 metres.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if(!radioDangerous.isChecked() && !radioShelter.isChecked() &&
                         !radioHelp.isChecked()){
 
@@ -81,10 +96,9 @@ public class NewMarkerActivity extends AppCompatActivity {
         intent.putExtra("status", status);
         intent.putExtra("latitude", latitude);
         intent.putExtra("longitude", longitude);
+        intent.putExtra("radius", radius);
         setResult(MapFragment.NEW_MARKER_REQUEST_CODE, intent);
 
         finish();
-
-//        startActivity(intent);
     }
 }

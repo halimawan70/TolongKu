@@ -14,6 +14,16 @@ public class MarkerData implements Serializable{
     private LatLng position;
     private Marker marker;
     private int status;
+    private User user;
+    private int markerId;
+
+    public int getMarkerId() {
+        return markerId;
+    }
+
+    public void setMarkerId(int markerId) {
+        this.markerId = markerId;
+    }
 
     public static final int DANGEROUS = 1;
     public static final int SHELTER = 2;
@@ -71,18 +81,34 @@ public class MarkerData implements Serializable{
 
     }
 
-    public MarkerData(int status, Marker marker, LatLng position, Circle circle){
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+
+    public MarkerData(int markerId,User user, int status, Marker marker, LatLng position, Circle circle){
         setPosition(position);
         setCircle(circle);
         setStatus(status);
         setMarker(marker);
+        setUser(user);
+        setMarkerId(markerId);
     }
 
-    public MarkerData(int status, Marker marker, LatLng position, Circle circle, Geofence geofence){
+
+    public MarkerData(int markerId,User user, int status, Marker marker, LatLng position, Circle circle, Geofence geofence){
         setPosition(position);
         setCircle(circle);
         setGeofence(geofence);
         setStatus(status);
         setMarker(marker);
+        setUser(user);
+        setMarkerId(markerId);
     }
+
+
 }

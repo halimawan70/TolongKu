@@ -19,14 +19,17 @@ public class MarkerActions extends AppCompatActivity {
     public static final int DO_NOTHING = 1;
     public static final int REMOVE_CIRCLE = 2;
     public static final int REMOVE_ALL = 3;
+    public static final int MESSAGE_USER = 4;
+    public static final int CALL_USER = 5;
     int action;
-    MarkerData markerData;
     TextView lblStatus;
+    TextView lblRadius;
     Button btnCall;
     Button btnMessage;
     Button btnDelete;
     Button btnCancel;
     int status;
+    int radius;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +39,16 @@ public class MarkerActions extends AppCompatActivity {
         Intent startingIntent = getIntent();
 
         status = startingIntent.getIntExtra("status", -1);
+        radius = startingIntent.getIntExtra("radius", -1);
 
         lblStatus = findViewById(R.id.txtAreaStatus);
+        lblRadius = findViewById(R.id.lblAreaRadius);
         btnCall = findViewById(R.id.btnCallForHelp);
         btnMessage = findViewById(R.id.btnMessageForHelp);
         btnDelete = findViewById(R.id.btnDeleteMarker);
         btnCancel = findViewById(R.id.btnCancel);
+
+        lblRadius.setText(radius + "m");
 
         if(status != -1){
 
@@ -78,8 +85,7 @@ public class MarkerActions extends AppCompatActivity {
             btnMessage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // TODO - Message the user for help
-                    action = DO_NOTHING;
+                    action = MESSAGE_USER;
                     returnResults();
                 }
             });
@@ -87,8 +93,7 @@ public class MarkerActions extends AppCompatActivity {
             btnCall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // TODO - Call the user for help
-                    action = DO_NOTHING;
+                    action = CALL_USER;
                     returnResults();
                 }
             });
@@ -96,10 +101,6 @@ public class MarkerActions extends AppCompatActivity {
             btnDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    // TODO - Validate is user is the creator of the marker itself and is
-                    // authorized to delete the markar
-
                     if(status == MarkerData.DANGEROUS){
                         action = REMOVE_ALL;
                     }else if(status == MarkerData.SHELTER || status == MarkerData.HELP){

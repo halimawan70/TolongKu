@@ -81,8 +81,9 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
                     User u = ds.getValue(User.class);
                     if(u != null)
                     {
-                        if(u.getUserName().contains(txtSearch.getText().toString()))
+                        if(u.getUserName().toLowerCase().toString().contains(txtSearch.getText().toString().toLowerCase()))
                         {
+                            Log.d("searchFriendActivity",u.getUserName()+":"+u.getUserID());
                             Log.d("searchFriendActivity","users count : "+users.size());
                             users.add(u);
 
@@ -177,7 +178,7 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     for(DataSnapshot ds : dataSnapshot.getChildren())
                                     {
-                                        Log.d("searchFriendActivity",ds.getValue().toString()+":"+ids.get(i));
+                                        //Log.d("searchFriendActivity",ds.getValue().toString()+":"+ids.get(i));
                                         if(ds.getValue().toString().equals(ids.get(i)))
                                         {
                                             Log.d("searchFriendActivity","false");
@@ -190,7 +191,7 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
                                         dbRef.child(MainActivity.authID).child("UserFriend").push().setValue(ids.get(i));
                                         HashMap<String,String> notificationData = new HashMap<String, String>();
                                         notificationData.put("from",MainActivity.authID);
-                                        notificationData.put("type","reqiest");
+                                        notificationData.put("type","request");
                                         notifRef.child(ids.get(i)).push().setValue(notificationData);
                                     }
                                 }
@@ -200,8 +201,6 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
 
                                 }
                             });
-
-
                         }
 
                         @Override

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
+
 
     <ImageView
         android:id="@+id/imgChatProfile"
@@ -10,9 +13,10 @@
         android:layout_height="41dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="21dp"
+
         app:srcCompat="@drawable/default_profile" />
+    //android:layout_marginStart="24dp"
+    //android:layout_marginTop="21dp"
 
     <TextView
         android:id="@+id/txtChatName"

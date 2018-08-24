@@ -31,6 +31,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Vector;
 
 
@@ -43,8 +45,12 @@ public class FriendsFragment extends Fragment {
     DatabaseReference dbRef;
     Vector<String> ids;
     Vector<User> users;
+    Vector<Message> messages;
     String phoneNumber;
     CustomAdapter ca;
+    Intent intent;
+
+    String messageSenderId,receiverID;
 
     final int MY_PERMISSIONS_REQUEST_PHONE_CALL = 0;
 
@@ -134,6 +140,8 @@ public class FriendsFragment extends Fragment {
         lvFriendList = getView().findViewById(R.id.lvFriendList);
         ca = new CustomAdapter();
         lvFriendList.setAdapter(ca);
+        messageSenderId = MainActivity.authID;
+        messages = new Vector<>();
         Toast.makeText(getActivity().getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
         dbRef = FirebaseDatabase.getInstance().getReference().child("Users").child(MainActivity.authID);
 
@@ -186,12 +194,51 @@ public class FriendsFragment extends Fragment {
             btnFriendListChat.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent i = new Intent(getActivity().getApplicationContext(), ChatActivity.class);
-                    i.putExtra("username",currUserName);
-                    i.putExtra("id",currID);
-                    Toast.makeText(getActivity().getApplicationContext(),"initiate",Toast.LENGTH_SHORT).show();
-                    Log.d("FriendsFragment","initiate");
-                    startActivity(i);
+                    intent = new Intent(getActivity().getApplicationContext(), ChatActivity.class);
+                    intent.putExtra("username",currUserName);
+                    intent.putExtra("id",currID);
+
+                    FirebaseDatabase.getInstance().getReference().child("Messages").child(messageSenderId).child(currID).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for(DataSnapshot ds : dataSnapshot.getChildren())
+                            {
+                                Message m  = ds.getValue(Message.class);
+                                messages.add(m);
+
+                            }
+                            FirebaseDatabase.getInstance().getReference().child("Messages").child(currID).child(messageSenderId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    for(DataSnapshot ds : dataSnapshot.getChildren())
+                                    {
+                                        Message m = ds.getValue(Message.class);
+                                        messages.add(m);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                            Collections.sort(messages);
+                            intent.putExtra("messages",messages);
+                            Toast.makeText(getActivity().getApplicationContext(),"initiate",Toast.LENGTH_SHORT).show();
+                            Log.d("FriendsFragment","initiate");
+                            startActivity(intent);
+
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+
                 }
             });
 

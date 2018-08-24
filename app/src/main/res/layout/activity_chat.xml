@@ -10,21 +10,29 @@
         android:id="@+id/layoutChatTop"
         layout="@layout/chatcustombar"
         android:layout_height="257dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="264dp"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"></include>
 
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvChat"
+        android:layout_width="match_parent"
+        android:layout_height="441dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"></android.support.v7.widget.RecyclerView>
+
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="0dp">
+        app:layout_constraintStart_toStartOf="parent">
 
 
-        <ImageView
+        <ImageButton
             android:id="@+id/imgChatImage"
             android:layout_width="50dp"
             android:layout_height="wrap_content"
@@ -38,7 +46,7 @@
             android:ems="10"
             android:inputType="textPersonName" />
 
-        <ImageView
+        <ImageButton
             android:id="@+id/imgChatSend"
             android:layout_width="18dp"
             android:layout_height="wrap_content"

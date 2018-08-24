@@ -65,6 +65,7 @@
         <activity android:name=".settingActivity" />
         <activity android:name=".searchFriendActivity" />
         <activity android:name=".ChatActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".NavigationActivity">
         </activity>
 

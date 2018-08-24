@@ -525,6 +525,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 Intent intent = new Intent(getActivity(), MarkerActions.class);
                 intent.putExtra("status", markerData.getStatus());
                 intent.putExtra("radius", radius);
+                intent.putExtra("host", markerCreator.getUserName());
                 startActivityForResult(intent, MARKER_ACTION_REQUEST_CODE);
             }
         });

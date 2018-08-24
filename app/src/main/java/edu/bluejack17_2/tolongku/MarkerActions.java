@@ -24,6 +24,7 @@ public class MarkerActions extends AppCompatActivity {
     int action;
     TextView lblStatus;
     TextView lblRadius;
+    TextView lblHostName;
     Button btnCall;
     Button btnMessage;
     Button btnDelete;
@@ -43,6 +44,8 @@ public class MarkerActions extends AppCompatActivity {
 
         lblStatus = findViewById(R.id.txtAreaStatus);
         lblRadius = findViewById(R.id.lblAreaRadius);
+        lblHostName = findViewById(R.id.lblHostName);
+        lblHostName.setText(startingIntent.getStringExtra("host"));
         btnCall = findViewById(R.id.btnCallForHelp);
         btnMessage = findViewById(R.id.btnMessageForHelp);
         btnDelete = findViewById(R.id.btnDeleteMarker);

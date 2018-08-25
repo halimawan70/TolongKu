@@ -52,7 +52,7 @@ public class settingActivity extends AppCompatActivity implements View.OnClickLi
         txtProfileMessage = findViewById(R.id.txtProfileMessage);
 
         updateUserData= FirebaseDatabase.getInstance().getReference().child("Users").child(MainActivity.authID);
-        //.makeText(getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
         btnProfileSave.setOnClickListener(this);
 
     }

@@ -315,7 +315,11 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         String email = tbEmail.getText().toString();
         String password = tbPassword.getText().toString();
 
-
+        if(email.isEmpty() || password.isEmpty()){
+            Toast.makeText(this, "Email and Password must not be empty!",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {

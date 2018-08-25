@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -125,6 +126,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 if(u.getUserID().compareTo(MainActivity.authID)==0)
                 {
                     currentUser = u;
+                    ((TextView)getActivity().findViewById(R.id.navUsername))
+                            .setText(currentUser.getUserName());
+                    ((TextView)getActivity().findViewById(R.id.navEmail))
+                            .setText(currentUser.getUserEmail());
                 }
             }
 

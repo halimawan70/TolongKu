@@ -52,7 +52,7 @@ public class settingActivity extends AppCompatActivity implements View.OnClickLi
         txtProfileMessage = findViewById(R.id.txtProfileMessage);
 
         updateUserData= FirebaseDatabase.getInstance().getReference().child("Users").child(MainActivity.authID);
-        Toast.makeText(getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
+        //.makeText(getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
         btnProfileSave.setOnClickListener(this);
 
     }
@@ -68,7 +68,7 @@ public class settingActivity extends AppCompatActivity implements View.OnClickLi
 
     public void updateData()
     {
-        Toast.makeText(getApplicationContext(),"pencet save",Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(),"pencet save",Toast.LENGTH_SHORT).show();
 
         Log.d("updateprofile", "mau update");
         if(updateUserData!=null)
@@ -98,7 +98,7 @@ public class settingActivity extends AppCompatActivity implements View.OnClickLi
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
                                         Log.d("updateprofile", "Password updated");
-                                        Toast.makeText(getApplicationContext(),"password updated",Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(getApplicationContext(),"password updated",Toast.LENGTH_SHORT).show();
                                     } else {
                                         Log.d("updateprofile", "Error password not updated");
                                     }

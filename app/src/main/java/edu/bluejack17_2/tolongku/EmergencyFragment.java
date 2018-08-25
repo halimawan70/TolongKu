@@ -158,7 +158,7 @@ public class EmergencyFragment extends Fragment implements View.OnClickListener 
 
     public void sendEmail()
     {
-        Toast.makeText(getContext(), dbReference.child("userContactEmail").toString(), Toast.LENGTH_SHORT);
+        //Toast.makeText(getContext(), dbReference.child("userContactEmail").toString(), Toast.LENGTH_SHORT);
         String[] TO = {dbReference.child("userContactEmail").toString()};
         //String[] CC = {"xyz@gmail.com"};
         Intent emailIntent = new Intent(Intent.ACTION_SEND);

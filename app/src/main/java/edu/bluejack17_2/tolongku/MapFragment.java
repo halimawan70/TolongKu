@@ -447,7 +447,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             });
                             Collections.sort(messages);
                             intent.putExtra("messages",messages);
-                            Toast.makeText(getActivity().getApplicationContext(),"initiate",Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getActivity().getApplicationContext(),"initiate",Toast.LENGTH_SHORT).show();
                             Log.d("FriendsFragment","initiate");
                             startActivity(intent);
                         }
@@ -530,7 +530,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        Toast.makeText(getActivity(), "Done", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "Done", Toast.LENGTH_SHORT).show();
         CameraPosition cameraPosition = CameraPosition.builder().target(mDefaultLocation)
                 .zoom(16).bearing(0).build();
 

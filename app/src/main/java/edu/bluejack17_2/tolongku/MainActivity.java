@@ -87,15 +87,15 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
 
         if(FirebaseAuth.getInstance().getCurrentUser() == null)
         {
-            Toast.makeText(this, "firebase user null", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "firebase user null", Toast.LENGTH_SHORT).show();
         }
         if(MainActivity.mGoogleApiClient == null && !mGoogleApiClient.isConnected())
         {
-            Toast.makeText(this, "google user null", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "google user null", Toast.LENGTH_SHORT).show();
         }
         if(AccessToken.getCurrentAccessToken() == null)
         {
-            Toast.makeText(this, "facebook user null", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "facebook user null", Toast.LENGTH_SHORT).show();
         }
 
        if(FirebaseAuth.getInstance().getCurrentUser() == null && (MainActivity.mGoogleApiClient == null ) && (AccessToken.getCurrentAccessToken() == null))
@@ -265,11 +265,11 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                 fromRegister = false;
                 return;
             }
-            Toast.makeText(this, "User is logged in!!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "User is logged in!!", Toast.LENGTH_SHORT).show();
             authID = currentUser.getUid();
             startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
         }else{
-            Toast.makeText(this, "User is not logged in!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "User is not logged in!", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -279,14 +279,14 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
         {
             GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
             authID = acct.getId();
-            Toast.makeText(this, "Google User is logged in!!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Google User is logged in!!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
         }
 
         if(AccessToken.getCurrentAccessToken() != null)
         {
             authID = Profile.getCurrentProfile().getId();
-            Toast.makeText(this, "Facebook User is logged in!!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Facebook User is logged in!!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(getApplicationContext(), NavigationActivity.class));
         }
     }
@@ -391,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         googleAuth = true;
                         authID = account.getId();
-                        Toast.makeText(getApplicationContext(),account.getId(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(),account.getId(), Toast.LENGTH_LONG).show();
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
                         ref.child("Users").child(account.getId()).addValueEventListener(new ValueEventListener() {
                             @Override

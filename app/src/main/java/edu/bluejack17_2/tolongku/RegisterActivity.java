@@ -182,7 +182,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     }
                     else
                     {
-                        Toast.makeText(getApplicationContext(), task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplicationContext(), task.getException().getMessage(),Toast.LENGTH_SHORT).show();
                     }
                 }
             }

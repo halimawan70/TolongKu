@@ -47,8 +47,8 @@ public class GeofenceTransitionService extends IntentService {
 
         if(mGeofencingEvent.hasError()){
             String error = String.valueOf(mGeofencingEvent.getErrorCode());
-            Toast.makeText(getApplicationContext(), "Error code =  " + error,
-                    Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Error code =  " + error,
+                    //Toast.LENGTH_SHORT).show();
             Log.d("Geofence", "Error code = " + error);
             return;
         }
@@ -64,11 +64,11 @@ public class GeofenceTransitionService extends IntentService {
 
             sendNotification(geoTransDetails);
 
-            Toast.makeText(this,  "Kena!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this,  "Kena!", Toast.LENGTH_SHORT).show();
             Log.d("Geofence", "In area of an existing Geofence!");
             Log.d("Geofence", geoTransDetails);
         }else{
-            Toast.makeText(this, "Not of interest!", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Not of interest!", Toast.LENGTH_SHORT).show();
             Log.d("Geofence", "Geofence is not of interest.");
         }
     }

@@ -124,7 +124,7 @@ public class NavigationActivity extends AppCompatActivity
         if(FirebaseAuth.getInstance().getCurrentUser() != null)
         {
             FirebaseAuth.getInstance().signOut();
-            Toast.makeText(getApplicationContext()," Firebase Logged Out",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext()," Firebase Logged Out",Toast.LENGTH_SHORT).show();
             MainActivity.firebaseAuth = false;
             Intent i=new Intent(getApplicationContext(),MainActivity.class);
             startActivity(i);
@@ -138,7 +138,7 @@ public class NavigationActivity extends AppCompatActivity
                         @Override
                         public void onResult(Status status) {
                             MainActivity.googleAuth = false;
-                            Toast.makeText(getApplicationContext()," Google Logged Out",Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext()," Google Logged Out",Toast.LENGTH_SHORT).show();
                             Intent i=new Intent(getApplicationContext(),MainActivity.class);
                             startActivity(i);
                         }
@@ -148,7 +148,7 @@ public class NavigationActivity extends AppCompatActivity
         if(AccessToken.getCurrentAccessToken() != null)
         {
             MainActivity.facebookAuth  = false;
-            Toast.makeText(getApplicationContext()," Facebook Logged Out",Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext()," Facebook Logged Out",Toast.LENGTH_SHORT).show();
 
             LoginManager.getInstance().logOut();
             Intent i=new Intent(getApplicationContext(),MainActivity.class);

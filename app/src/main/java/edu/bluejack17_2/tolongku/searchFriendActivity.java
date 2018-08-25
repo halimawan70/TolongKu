@@ -165,12 +165,12 @@ public class searchFriendActivity extends AppCompatActivity implements View.OnCl
                 @Override
                 public void onClick(View v)
                 {
-                    Toast.makeText(getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
                     dbRef.child(MainActivity.authID).addListenerForSingleValueEvent(new ValueEventListener() {
                         boolean flag = true;
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            Toast.makeText(getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
                             dbRef.child(MainActivity.authID).child("UserFriend").addListenerForSingleValueEvent(new ValueEventListener() {
 
 

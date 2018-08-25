@@ -142,7 +142,7 @@ public class FriendsFragment extends Fragment {
         lvFriendList.setAdapter(ca);
         messageSenderId = MainActivity.authID;
         messages = new Vector<>();
-        Toast.makeText(getActivity().getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity().getApplicationContext(),MainActivity.authID,Toast.LENGTH_SHORT).show();
         dbRef = FirebaseDatabase.getInstance().getReference().child("Users").child(MainActivity.authID);
 
         populateFriendList();
@@ -224,7 +224,7 @@ public class FriendsFragment extends Fragment {
                             });
                             Collections.sort(messages);
                             intent.putExtra("messages",messages);
-                            Toast.makeText(getActivity().getApplicationContext(),"initiate",Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getActivity().getApplicationContext(),"initiate",Toast.LENGTH_SHORT).show();
                             Log.d("FriendsFragment","initiate");
                             startActivity(intent);
 

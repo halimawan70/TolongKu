@@ -65,6 +65,7 @@ public class ChatActivity extends AppCompatActivity {
     private LinearLayoutManager llm;
     private MessageAdapter ma;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,7 +113,7 @@ public class ChatActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         //messageSenderId = mAuth.getCurrentUser().getUid();
         messageSenderId = MainActivity.authID;
-        Toast.makeText(getApplicationContext(), messageSenderId,Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), messageSenderId,Toast.LENGTH_SHORT).show();
 
         getHistory();
 
@@ -143,7 +144,7 @@ public class ChatActivity extends AppCompatActivity {
 
             private void SendMessage()
             {
-                String messageText = txtChatContent.getText().toString();
+                final String messageText = txtChatContent.getText().toString();
                 if(TextUtils.isEmpty(messageText))
                 {
                     Toast.makeText(getApplicationContext(),"Message cannot be empty",Toast.LENGTH_SHORT).show();
@@ -178,6 +179,35 @@ public class ChatActivity extends AppCompatActivity {
                             txtChatContent.setText("");
                         }
                     });
+
+
+                    rootRef.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for(DataSnapshot ds : dataSnapshot.getChildren())
+                            {
+                                Log.d("ChatActivity",ds.child("userID").getValue(String.class));
+                                if(ds.child("userID").getValue(String.class).compareTo(messageSenderId) ==0)
+                                {
+                                    Log.d("ChatActivity",receiverID);
+                                    u = ds.getValue(User.class);
+                                    HashMap<String,String> notificationData = new HashMap<String, String>();
+                                    notificationData.put("content",messageText);
+                                    notificationData.put("name",u.getUserName());
+                                    DatabaseReference notifRef = FirebaseDatabase.getInstance().getReference().child("Notifications2");
+                                    notifRef.child(receiverID).push().setValue(notificationData);
+
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+
 
                 }
             }
